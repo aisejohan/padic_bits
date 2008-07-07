@@ -1,0 +1,86 @@
+	.file	"mul_trivial.c"
+	.text
+	.p2align 4,,15
+.globl mul4
+	.type	mul4, @function
+mul4:
+.LFB2:
+	movq	(%rsi), %rcx
+	movq	(%rdx), %rax
+	leaq	(%rax,%rcx), %r8
+	imulq	%rcx, %rax
+	movq	%r8, 8(%rdi)
+	movq	%rax, (%rdi)
+	movq	%rcx, %rax
+	imulq	8(%rdx), %rax
+	movq	%r8, 16(%rdi)
+	addq	%r8, %rax
+	movq	%rax, 8(%rdi)
+	movq	%rcx, %rax
+	imulq	16(%rdx), %rax
+	movq	%r8, 24(%rdi)
+	addq	%r8, %rax
+	movq	%rax, 16(%rdi)
+	imulq	24(%rdx), %rcx
+	addq	%r8, %rcx
+	movq	%rcx, 24(%rdi)
+	movq	8(%rsi), %rcx
+	movq	%rcx, %rax
+	imulq	(%rdx), %rax
+	addq	%rax, 8(%rdi)
+	movq	%r8, %rax
+	addq	16(%rdi), %rax
+	movq	%rax, 16(%rdi)
+	addq	8(%rdx), %rax
+	movq	%rax, 16(%rdi)
+	movq	%r8, %rax
+	addq	24(%rdi), %rax
+	movq	%rax, 24(%rdi)
+	imulq	16(%rdx), %rcx
+	addq	%rax, %rcx
+	movq	%rcx, 24(%rdi)
+	movq	16(%rsi), %rcx
+	movq	(%rdx), %rax
+	addq	24(%rdi), %r8
+	addq	%rax, 16(%rdi)
+	movq	%r8, 24(%rdi)
+	imulq	8(%rdx), %rcx
+	addq	%r8, %rcx
+	movq	%rcx, 24(%rdi)
+	movq	(%rdx), %rax
+	imulq	24(%rsi), %rax
+	addq	%rax, %rcx
+	movq	%rcx, 24(%rdi)
+	ret
+.LFE2:
+	.size	mul4, .-mul4
+	.section	.eh_frame,"a",@progbits
+.Lframe1:
+	.long	.LECIE1-.LSCIE1
+.LSCIE1:
+	.long	0x0
+	.byte	0x1
+	.string	"zR"
+	.uleb128 0x1
+	.sleb128 -8
+	.byte	0x10
+	.uleb128 0x1
+	.byte	0x3
+	.byte	0xc
+	.uleb128 0x7
+	.uleb128 0x8
+	.byte	0x90
+	.uleb128 0x1
+	.align 8
+.LECIE1:
+.LSFDE1:
+	.long	.LEFDE1-.LASFDE1
+.LASFDE1:
+	.long	.LASFDE1-.Lframe1
+	.long	.LFB2
+	.long	.LFE2-.LFB2
+	.uleb128 0x0
+	.align 8
+.LEFDE1:
+	.ident	"GCC: (Gentoo 4.3.2 p1.0) 4.3.2 20080626 (prerelease)"
+	.section	.note.GNU-stack,"",@progbits
