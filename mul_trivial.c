@@ -1,9 +1,6 @@
-#define mul(l, h, a, b)						\
-  __asm__ ("mulq %3" : "=a" (l), "=d" (h) : "a" (a), "rm" (b))
-
 void mul4(unsigned long *S, unsigned long *A, unsigned long *B)
 {
-	unsigned long ml, mh, a, b;
+	unsigned long ml, mh, a, b, c, d;
 
 	a = A[0];
 	b = B[0];
@@ -13,14 +10,16 @@ void mul4(unsigned long *S, unsigned long *A, unsigned long *B)
 	S[1] = mh;
 	b = B[1];
 	ml = a * b;
-	S[1] = ml + S[1];
-	S[2] = mh;
+	c = ml;
+	d = mh;
 	b = B[2];
 	ml = b * a;
-	S[2] = ml + S[2];
+	S[2] = ml;
 	S[3] = mh;
 	b = B[3];
 	ml = b * a;
+	S[1] = S[1] + c;
+	S[2] = S[2] + d;
 	S[3] = ml + S[3];
 
 	a = A[1];

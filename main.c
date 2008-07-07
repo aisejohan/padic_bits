@@ -69,6 +69,7 @@ void print4(unsigned long *a)
 	printf("[%lu, %lu, %lu, %lu]", a[0], a[1], a[2], a[3]);
 }
 
+#ifdef TOTOOTO
 void test_add4(void )
 {
 	int i,j;
@@ -90,6 +91,32 @@ void test_add4(void )
 		printf("C = "); print4(C); printf("\n");
 	}
 }
+#endif
+
+void test_mul4(void )
+{
+	int i,j;
+	unsigned long A[4], B[4], C[4];
+
+	for(j = 1; j <= 1000; j++) {
+		for(i = 0; i <= 3; i++) {
+			A[i] = j + i + i*j + j*j*j;
+			B[i] = i*i + j*j + 1+j*j*j*j*j*j;
+			C[i] = 1 + i*i*i + j*j*j*j;
+		}
+		
+		printf("------------------------------------\n");
+		printf("B = "); print4(B); printf(";\n");
+		printf("C = "); print4(C); printf(";\n");
+		mul4(A,B,C);
+		printf("A = "); print4(A); printf(";\n");
+		printf("test_OK();\n");
+		printf("------------------------------------\n");
+	}
+}
+
+
+
 
 #ifdef TOTOOTO
 void test_mul(void )
@@ -160,6 +187,6 @@ void empty(void )
 
 int main(void )
 {
-	test_add4();
+	test_mul4();
 	return(0);
 }

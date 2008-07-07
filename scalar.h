@@ -21,4 +21,5 @@
  *
  *									*/
 
-void add4(unsigned long *A, unsigned long *B, unsigned long *C);
+void add4(unsigned long *S, unsigned long *A, unsigned long *B);
+void mul4(unsigned long *S, unsigned long *A, unsigned long *B);
