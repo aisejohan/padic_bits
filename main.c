@@ -151,13 +151,13 @@ void test_my_rdtsc(void )
 	A[1] = 2;
 	A[2] = 3;
 	A[3] = 5;
-	div4(A, 11);
+	div4_external_C(A, 11);
 	before = my_rdtsc();
-	div4(A, 1);
-	div4(A, 21);
-	div4(A, 31);
-	div4(A, 5);
-	div4(A, 7);
+	div4_external_C(A, 1);
+	div4_external_C(A, 21);
+	div4_external_C(A, 31);
+	div4_external_C(A, 5);
+	div4_external_C(A, 7);
 	after = my_rdtsc();
 	printf("before = %lu and after = %lu difference = %lu.\n",
 						before, after, after - before);
