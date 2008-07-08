@@ -26,3 +26,5 @@ void mul4(unsigned long *S, unsigned long *A, unsigned long *B);
 unsigned long val4(unsigned long *A);
 void neg4(unsigned long *A);
 void div4(unsigned long *A, unsigned int k);
+void div4_external_C(unsigned long *A, unsigned int k);
+unsigned long my_rdtsc(void );

@@ -9,8 +9,10 @@ all:
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native neg.s
 	cp div_trivial.s.gcc412 div.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native div.s
+	cp rdtsc.s.gcc432 rdtsc4.s
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=native rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o main.o
+	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o main.o
 
 older_gcc:
 	cp add_trivial.s.gcc432 add.s
@@ -23,8 +25,11 @@ older_gcc:
 	gcc -Wall -pedantic -std=c99 -c -O3 neg.s
 	cp div_trivial.s.gcc412 div.s
 	gcc -Wall -pedantic -std=c99 -c -O3 div.s
+	cp rdtsc.s.gcc432 rdtsc.s
+	gcc -Wall -pedantic -std=c99 -c -O3 rdtsc.s
+	gcc -Wall -pedantic -std=c99 -c -O3 div_trivial.c
 	gcc -Wall -pedantic -std=c99 -c -O3 main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o main.o
+	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o main.o
 
 clean:
 	rm -f tester

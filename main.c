@@ -143,6 +143,26 @@ void test_div4(void )
 	}
 }
 
+void test_my_rdtsc(void )
+{
+	unsigned long before, after;
+	unsigned long A[4];
+	A[0] = 1;
+	A[1] = 2;
+	A[2] = 3;
+	A[3] = 5;
+	div4(A, 11);
+	before = my_rdtsc();
+	div4(A, 1);
+	div4(A, 21);
+	div4(A, 31);
+	div4(A, 5);
+	div4(A, 7);
+	after = my_rdtsc();
+	printf("before = %lu and after = %lu difference = %lu.\n",
+						before, after, after - before);
+}
+
 void test_time_div4(void )
 {
 	int i, j;
@@ -335,6 +355,6 @@ void test_val4(void )
 
 int main(void )
 {
-	test_time_div4();
+	test_my_rdtsc();
 	return(0);
 }
