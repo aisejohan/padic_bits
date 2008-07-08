@@ -27,49 +27,76 @@
 #include <unistd.h>
 #include "scalar.h"
 
-#define add_ssaaaa(sh, sl, ah, al, bh, bl)				\
-  __asm__ ("addq %5,%q1\n\tadcq %3,%q0"					\
-	   : "=r" (sh), "=&r" (sl)					\
-	   : "0"  (ah), "rme" (bh),					\
-	     "%1" (al), "rme" (bl))
-
-#define sub_ddmmss(sh, sl, ah, al, bh, bl) 				\
-  __asm__ ("subq %5,%q1\n\tsbbq %3,%q0"					\
-	   : "=r" (sh), "=&r" (sl)					\
-	   : "0" (ah), "rme" (bh),					\
-	     "1" (al), "rme" (bl))
-
-/* Found on a blog */
-#define blog(l, h, a, b)						\
-  __asm__ ("mulq %3" : "=a" (l), "=d" (h) : "a" (a), "rm" (b))
-
-#define udiv_qrnnd(q, r, n1, n0, dx) 					\
-  __asm__ ("divq %4"							\
-	   : "=a" (q), "=d" (r)						\
-	   : "0" (n0), "1" (n1), "rm" (dx))
-
-#define ffs(count, x)							\
-  do {									\
-        __asm__ ("bsfq %1,%0\n\t"					\
-            "cmovzq %2,%0"						\
-            : "=r" (count) : "rm" (x), "rm" ((unsigned long)(64)));	\
-  } while(0)
-
-#define fls(count, x)							\
-  do {									\
-        __asm__ ("bsrq %1,%0\n\t"					\
-            "cmovzq %2,%0"						\
-            : "=r" (count) : "rm" (x), "rm" ((unsigned long)(64)));	\
-  } while(0)
-
-
 
 void print4(unsigned long *a)
 {
 	printf("[%lu, %lu, %lu, %lu]", a[0], a[1], a[2], a[3]);
 }
 
-#ifdef TOTOOTO
+void chop_C(unsigned long *couple, unsigned long a)
+{
+	couple[0] = (a << 32) >> 32;
+	couple[1] = a >> 32;
+}
+
+void add_C(unsigned long *triple, unsigned long a, unsigned long b)
+{
+	unsigned long temp;
+	unsigned long ac[2], bc[2], tempc[2];
+
+	chop_C(ac, a);
+	chop_C(bc, b);
+	temp = ac[0] + bc[0];
+	chop_C(tempc, temp);
+	triple[0] = tempc[0];
+	temp = tempc[1] + ac[1] + bc[1];
+	chop_C(tempc, temp);
+	triple[1] = tempc[0];
+	triple[2] = tempc[1];
+}
+
+void add4_C(unsigned long *S, unsigned long *A, unsigned long *B)
+{
+	unsigned long couple[2];
+	unsigned long triple[3];
+	unsigned long s[8];
+	
+	add_C(triple, A[0], B[0]);
+	s[0] = triple[0];
+	s[1] = triple[1];
+	s[2] = triple[2];
+	add_C(triple, A[1], B[1]);
+	s[2] += triple[0];
+	s[3] = triple[1];
+	s[4] = triple[2];
+	add_C(triple, A[2], B[2]);
+	s[4] += triple[0];
+	s[5] = triple[1];
+	s[6] = triple[2];
+	add_C(triple, A[3], B[3]);
+	s[6] += triple[0];
+	s[7] = triple[1];
+	chop_C(couple, s[2]);
+	s[2] = couple[0];
+	s[3] += couple[1];
+	chop_C(couple, s[3]);
+	s[3] = couple[0];
+	s[4] += couple[1];
+	chop_C(couple, s[4]);
+	s[4] = couple[0];
+	s[5] += couple[1];
+	chop_C(couple, s[5]);
+	s[5] = couple[0];
+	s[6] += couple[1];
+	chop_C(couple, s[6]);
+	s[6] = couple[0];
+	s[7] += couple[1];
+	S[0] = s[0] + (s[1] << 32);
+	S[1] = s[2] + (s[3] << 32);
+	S[2] = s[4] + (s[5] << 32);
+	S[3] = s[6] + (s[7] << 32);
+}
+
 void test_add4(void )
 {
 	int i,j;
@@ -82,16 +109,54 @@ void test_add4(void )
 			C[i] = i*i*i + j*j*j*j;
 		}
 
-		printf("A = "); print4(A); printf("\n");
+		printf("------------------------------------\n");
 		printf("B = "); print4(B); printf("\n");
 		printf("C = "); print4(C); printf("\n");
 		add4(A,B,C);
 		printf("A = "); print4(A); printf("\n");
-		printf("B = "); print4(B); printf("\n");
-		printf("C = "); print4(C); printf("\n");
+		add4_C(A,B,C);
+		printf("A = "); print4(A); printf("\n");
+		printf("------------------------------------\n");
 	}
 }
-#endif
+
+void test_time_add(void )
+{
+	int i,j;
+	unsigned long A[4], B[4], C[4], D[4];
+	A[0] = 1;
+	A[1] = 2;
+	A[2] = 3;
+	A[3] = 5;
+	B[0] = 1;
+	B[1] = 2;
+	B[2] = 3;
+	B[3] = 5;
+	C[0] = 11;
+	C[1] = 12;
+	C[2] = 13;
+	C[3] = 15;
+	for (j = 1; j <= 10000000; j++) {
+/*		for (i = 0; i <= 3; i++) {
+			B[i] = 7*B[i] + 1;
+			C[i] = A[i];
+		} */
+		add4_C(A,B,C);
+		add4_C(D,B,C);
+/*		if (A[3] != D[3]) {
+			printf("B = "); print4(B); printf("\n");
+			printf("C = "); print4(C); printf("\n");
+			printf("A = "); print4(A); printf("\n");
+			printf("D = "); print4(D); printf("\n");
+			return;
+		} */
+
+	}
+	print4(A);
+	printf("\n");
+}
+
+	
 
 void test_mul4(void )
 {
@@ -116,77 +181,30 @@ void test_mul4(void )
 }
 
 
-
-
-#ifdef TOTOOTO
-void test_mul(void )
+void test_val4(void )
 {
 	int i;
-	unsigned long A,B,C,D;
-	A = 1;
-	B = 2;
-	C = 3;
-	D = 4;
-	printf("HERE %lu %lu %lu %lu.\n", A, B, C, D);
-	for(i = 1; i <= 100; i++) {
-		blog(A, B, C, D);
-		printf("HERE %lu %lu %lu %lu.\n", A, B, C, D);
-		C = C + i;
-		D = i*D + i*i + 1;
-	}
+	unsigned long j;
+	unsigned long A[4];
 
-}
-
-
-void test_valuation(void )
-{
-	int i;
-	unsigned long A,B,C,D,E,F;
-
-	A = 2;
-	B = 1;
-	C = 3;
-	D = -1;
-	E = 5;
-	F = -1;
-
-	printf("HERE %lu %lu %lu %lu %lu %lu.\n", A, B, C, D, E, F);
-	for(i=1; i<=100; i++) {
-		B = B * i;
-		printf("Here B = %lu.\n", B);
-
-		ffs(A, B);
-		printf("ffs of B : %lu.\n", A);
-
-		fls(A, B);
-		printf("fls of B : %lu.\n", A);
+	A[0] = 1;
+	A[1] = 1;
+	A[2] = 1;
+	A[3] = 1;
+	for(i=1; i<=500; i++) {
+		A[0] = A[0] << 1 ;
+		if (i % 2 == 0) A[1] = A[1] << 1 ;
+		if (i % 3 == 0) A[2] = A[2] << 1 ;
+		if (i % 4 == 0) A[3] = A[3] << 1 ;
+		printf("A = "); print4(A); printf(";\n");
+		j = val4(A);
+		printf("valuation of A : %lu.\n", j);
 	}
 }
 
-void empty(void )
-{
-	unsigned long A,B,C,D,E,F;
-
-	A = 2;
-	B = 1;
-	C = 3;
-	D = -1;
-	E = 5;
-	F = -1;
-
-	add_ssaaaa(A, B, C, D, E, F);
-	printf("HERE %lu %lu %lu %lu %lu %lu.\n", A, B, C, D, E, F);
-
-	sub_ddmmss(A, B, C, D, E, F);
-	printf("HERE %lu %lu %lu %lu %lu %lu.\n", A, B, C, D, E, F);
-
-	udiv_qrnnd(A, B, C, D, E);
-	printf("HERE %lu %lu %lu %lu %lu %lu.\n", A, B, C, D, E, F);
-}
-#endif
 
 int main(void )
 {
-	test_mul4();
+	test_time_add();
 	return(0);
 }

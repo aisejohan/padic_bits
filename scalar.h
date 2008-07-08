@@ -23,3 +23,4 @@
 
 void add4(unsigned long *S, unsigned long *A, unsigned long *B);
 void mul4(unsigned long *S, unsigned long *A, unsigned long *B);
+unsigned long val4(unsigned long *A);
