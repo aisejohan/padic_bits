@@ -1,6 +1,9 @@
 .globl add4
 	.type	add4, @function
 add4:
+# Input 1: rdi <--- S
+# Input 2: rsi <--- A
+# Input 3: rdx <--- B
 	movq	(%rdx), %rax
 	addq	(%rsi), %rax
 	movq	%rax, (%rdi)

@@ -30,7 +30,8 @@
 
 void print4(unsigned long *a)
 {
-	printf("[%lu, %lu, %lu, %lu]", a[0], a[1], a[2], a[3]);
+	printf("%lu + %lu*2^64 + %lu*2^128 + %lu*2^192",
+						a[0], a[1], a[2], a[3]);
 }
 
 void chop_C(unsigned long *couple, unsigned long a)
@@ -97,6 +98,89 @@ void add4_C(unsigned long *S, unsigned long *A, unsigned long *B)
 	S[3] = s[6] + (s[7] << 32);
 }
 
+void div4_C(unsigned long *A, unsigned int k)
+{
+	A[0] = (A[0] >> k) | (A[1] << (64 - k));
+	A[1] = (A[1] >> k) | (A[2] << (64 - k));
+	A[2] = (A[2] >> k) | (A[3] << (64 - k));
+	A[3] = A[3] >> k;
+}
+
+void set4_C(unsigned long *A, unsigned long *B)
+{
+	A[0] = B[0];
+	A[1] = B[1];
+	A[2] = B[2];
+	A[3] = B[3];
+}
+
+void test_div4(void )
+{
+	int i,j,k;
+	unsigned long A[4], B[4], C[4];
+
+	k = 33;
+
+	for(j = 1; j <= 10000; j++) {
+		for(i = 0; i <= 3; i++) {
+			A[i] = j + i + j*i*j*j;
+		}
+		set4_C(B, A);
+		printf("------------------------------------\n");
+		printf("A = "); print4(A); printf("\n");
+		div4(A, k);
+		printf("A >> %d = ", k); print4(A); printf("\n");
+		div4_C(B, k);
+		neg4(B);
+		add4(C, A, B);
+		if ((C[0] != 0) | (C[1] != 0) | (C[2] != 0) | (C[3] != 0)) {
+			printf("A = "); print4(A); printf("\n");
+			printf("B = "); print4(B); printf("\n");
+			printf("SUM = "); print4(C); printf("\n");
+			return;
+		}
+		printf("------------------------------------\n");
+	}
+}
+
+void test_time_div4(void )
+{
+	int i, j;
+	unsigned long A[4], B[4], C[4];
+	A[0] = 1;
+	A[1] = 2;
+	A[2] = 3;
+	A[3] = 5;
+	B[0] = 16;
+	B[1] = 2;
+	B[2] = 3;
+	B[3] = 5;
+	C[0] = 11;
+	C[1] = 12;
+	C[2] = 13;
+	C[3] = 15;
+	for (j = 1; j <= 10000000; j++) {		
+		for (i = 0; i <= 3; i++) {
+			B[i] = 7*B[i] + i;
+			A[i] = B[i];
+		}
+		for (i = 1; i <= 129; i++) {
+			div4(A, 1);
+		}
+/*		if (A[3] != D[3]) {
+			printf("B = "); print4(B); printf("\n");
+			printf("C = "); print4(C); printf("\n");
+			printf("A = "); print4(A); printf("\n");
+			printf("D = "); print4(D); printf("\n");
+			return;
+		} */
+
+	}
+	print4(A);
+	printf("\n");
+}	
+
+
 void test_add4(void )
 {
 	int i,j;
@@ -120,9 +204,51 @@ void test_add4(void )
 	}
 }
 
-void test_time_add(void )
+void test_neg4(void )
 {
 	int i,j;
+	unsigned long A[4], B[4], C[4], D[4];
+
+	A[0] = 1;
+	A[1] = 2;
+	A[2] = 3;
+	A[3] = 5;
+	B[0] = 1;
+	B[1] = 2;
+	B[2] = 3;
+	B[3] = 5;
+	C[0] = 11;
+	C[1] = 12;
+	C[2] = 13;
+	C[3] = 15;
+	D[0] = 11;
+	D[1] = 12;
+	D[2] = 13;
+	D[3] = 15;
+	for (j = 1; j <= 10000000; j++) {
+		for (i = 0; i <= 3; i++) {
+			A[i] = 7*A[i] + 1;
+		}
+		B[0] = A[0];
+		B[1] = A[1];
+		B[2] = A[2];
+		B[3] = A[3];
+		neg4(B);
+		add4(C, A, B);
+		if ((C[0] != 0) | (C[1] != 0) | (C[2] != 0) | (C[3] != 0)) {
+			printf("A = "); print4(A); printf("\n");
+			printf("-A = "); print4(B); printf("\n");
+			printf("SUM = "); print4(C); printf("\n");
+			return;
+		}
+/*		printf("A = "); print4(A); printf("\n"); */
+
+	}
+}
+
+void test_time_add(void )
+{
+	int j;
 	unsigned long A[4], B[4], C[4], D[4];
 	A[0] = 1;
 	A[1] = 2;
@@ -137,9 +263,13 @@ void test_time_add(void )
 	C[2] = 13;
 	C[3] = 15;
 	for (j = 1; j <= 10000000; j++) {
-/*		for (i = 0; i <= 3; i++) {
-			B[i] = 7*B[i] + 1;
-			C[i] = A[i];
+/*		
+		{ 
+			int i;
+			for (i = 0; i <= 3; i++) {
+				B[i] = 7*B[i] + 1;
+				C[i] = A[i];
+			}
 		} */
 		add4_C(A,B,C);
 		add4_C(D,B,C);
@@ -205,6 +335,6 @@ void test_val4(void )
 
 int main(void )
 {
-	test_time_add();
+	test_time_div4();
 	return(0);
 }
