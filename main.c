@@ -106,6 +106,194 @@ void add4_C(unsigned long *S, unsigned long *A, unsigned long *B)
 	S[3] = s[6] + (s[7] << 32);
 }
 
+void mul4_C(unsigned long *S, unsigned long *A, unsigned long *B)
+{
+	unsigned long t1, t2;
+	unsigned long ac[2], bc[2], sc[2];
+	unsigned long triple[3];
+	unsigned long s[8];
+
+	chop_C(ac, A[0]);
+	chop_C(bc, B[0]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[0] = sc[0];
+	s[1] = sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[1] += triple[0];
+	s[2] = triple[1];
+	s[3] = triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[2] += sc[0];
+	s[3] += sc[1];
+
+/*	chop_C(ac, A[0]); */
+	chop_C(bc, B[1]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[2] += sc[0];
+	s[3] += sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[3] += triple[0];
+	s[4] = triple[1];
+	s[5] = triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[4] += sc[0];
+	s[5] += sc[1];
+
+/*	chop_C(ac, A[0]); */
+	chop_C(bc, B[2]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[4] += sc[0];
+	s[5] += sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[5] += triple[0];
+	s[6] = triple[1];
+	s[7] = triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+/*	chop_C(ac, A[0]); */
+/*	chop_C(bc, B[3]); */
+	t1 = A[0] * B[3];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+	chop_C(ac, A[1]);
+	chop_C(bc, B[0]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[2] += sc[0];
+	s[3] += sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[3] += triple[0];
+	s[4] += triple[1];
+	s[5] += triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[4] += sc[0];
+	s[5] += sc[1];
+
+/*	chop_C(ac, A[1]); */
+	chop_C(bc, B[1]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[4] += sc[0];
+	s[5] += sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[5] += triple[0];
+	s[6] += triple[1];
+	s[7] += triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+/*	chop_C(ac, A[1]); */
+/*	chop_C(bc, B[2]); */
+	t1 = A[1] * B[2];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+	chop_C(ac, A[2]);
+	chop_C(bc, B[0]);
+	t1 = ac[0] * bc[0];
+	chop_C(sc, t1);
+	s[4] += sc[0];
+	s[5] += sc[1];
+	t1 = ac[0] * bc[1];
+	t2 = ac[1] * bc[0];
+	add_C(triple, t1, t2);
+	s[5] += triple[0];
+	s[6] += triple[1];
+	s[7] += triple[2];
+	t1 = ac[1] * bc[1];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+/*	chop_C(ac, A[2]); */
+/*	chop_C(bc, B[1]); */
+	t1 = A[2] * B[1];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+/*	chop_C(ac, A[3]); */
+/*	chop_C(bc, B[0]); */
+	t1 = A[3] * B[0];
+	chop_C(sc, t1);
+	s[6] += sc[0];
+	s[7] += sc[1];
+
+	chop_C(sc, s[0]);
+	s[0] = sc[0];
+	s[1] += sc[1];
+	chop_C(sc, s[1]);
+	s[1] = sc[0];
+	s[2] += sc[1];
+	chop_C(sc, s[2]);
+	s[2] = sc[0];
+	s[3] += sc[1];
+	chop_C(sc, s[3]);
+	s[3] = sc[0];
+	s[4] += sc[1];
+	chop_C(sc, s[4]);
+	s[4] = sc[0];
+	s[5] += sc[1];
+	chop_C(sc, s[5]);
+	s[5] = sc[0];
+	s[6] += sc[1];
+	chop_C(sc, s[6]);
+	s[6] = sc[0];
+	s[7] += sc[1];
+	chop_C(sc, s[7]);
+	s[7] = sc[0];
+
+	S[0] = s[0] + (s[1] << 32);
+	S[1] = s[2] + (s[3] << 32);
+	S[2] = s[4] + (s[5] << 32);
+	S[3] = s[6] + (s[7] << 32);
+}
+
+void add4_inline_asm_C(unsigned long *S, unsigned long *A, unsigned long *B)
+{
+	__asm__("movq	(%2), %%rax		\n\t"	\
+		"addq	(%1), %%rax		\n\t"	\
+		"movq	%%rax, (%0)		\n\t"	\
+		"movq	8(%2), %%rax		\n\t"	\
+		"adcq	8(%1), %%rax		\n\t"	\
+		"movq	%%rax, 8(%0)		\n\t"	\
+		"movq	16(%2), %%rax		\n\t"	\
+		"adcq	16(%1), %%rax		\n\t"	\
+		"movq	%%rax, 16(%0)		\n\t"	\
+		"movq	24(%2), %%rax		\n\t"	\
+		"adcq	24(%1), %%rax		\n\t"	\
+		"movq	%%rax, 24(%0)"			\
+		: 					\
+		: "r" (S), "r" (A), "r" (B)		\
+		: "rax");
+	return;
+}
+
+
 void div4_C(unsigned long *A, unsigned int k)
 {
 	A[0] = (A[0] >> k) | (A[1] << (64 - k));
@@ -181,11 +369,14 @@ void test_div4(void )
 	printf("------------------------------------\n");
 }
 
-void test_my_rdtsc(unsigned long *A)
+#define ADD4(a,b,c)	add4_inline_asm_C(a,b,c)
+#define MUL4(a,b,c)	mul4(a,b,c)
+
+void test_my_rdtsc(unsigned long *A, unsigned long *B, unsigned long *C)
 {
 	unsigned long before, after;
 	before = my_rdtsc_inline_asm_C();
-	DIV4(A, 21);
+	MUL4(A, B, C);
 	after = my_rdtsc_inline_asm_C();
 	printf("before = %lu and after = %lu difference = %lu.\n",
 						before, after, after - before);
@@ -232,23 +423,25 @@ void test_time_div4(void )
 void test_add4(void )
 {
 	int i,j;
-	unsigned long A[4], B[4], C[4];
+	unsigned long A[4], B[4], C[4], D[4];
 
 	for(j = 1; j <= 1000; j++) {
 		for(i = 0; i <= 3; i++) {
 			A[i] = j + i;
+			D[i] = 15*i + j;
 			B[i] = i*i + j*j + 1;
 			C[i] = i*i*i + j*j*j*j;
 		}
+		ADD4(A,B,C);
+		add4_C(D,B,C);
+		if ((A[0] != D[0]) | (A[1] != D[1]) | (A[2] != D[2]) | (A[3] != D[3])) {
+			printf("A = "); print4(A); printf("\n");
+			printf("B = "); print4(B); printf("\n");
+			printf("C = "); print4(C); printf("\n");
+			printf("D = "); print4(D); printf("\n");
+			return;
+		}
 
-		printf("------------------------------------\n");
-		printf("B = "); print4(B); printf("\n");
-		printf("C = "); print4(C); printf("\n");
-		add4(A,B,C);
-		printf("A = "); print4(A); printf("\n");
-		add4_C(A,B,C);
-		printf("A = "); print4(A); printf("\n");
-		printf("------------------------------------\n");
 	}
 }
 
@@ -334,28 +527,27 @@ void test_time_add(void )
 	printf("\n");
 }
 
-	
-
 void test_mul4(void )
 {
 	int i,j;
-	unsigned long A[4], B[4], C[4];
+	unsigned long A[4], B[4], C[4], D[4];
 
 	for(j = 1; j <= 1000; j++) {
-		for(i = 0; i <= 3; i++) {
-			A[i] = j + i + i*j + j*j*j;
-			B[i] = i*i + j*j + 1+j*j*j*j*j*j;
-			C[i] = 1 + i*i*i + j*j*j*j;
+		rand4_C(B);
+		rand4_C(C);
+		mul4(A, B, C);
+		MUL4(D, B, C);
+		if ((A[0] != D[0]) | (A[1] != D[1]) | (A[2] != D[2]) | (A[3] != D[3])) {
+			printf("------------------------------------\n");
+			printf("A = "); print4(A); printf(";\n");
+			printf("B = "); print4(B); printf(";\n");
+			printf("C = "); print4(C); printf(";\n");
+			printf("D = "); print4(D); printf(";\n");
+			printf("------------------------------------\n");
+			return;
 		}
-		
-		printf("------------------------------------\n");
-		printf("B = "); print4(B); printf(";\n");
-		printf("C = "); print4(C); printf(";\n");
-		mul4(A,B,C);
-		printf("A = "); print4(A); printf(";\n");
-		printf("test_OK();\n");
-		printf("------------------------------------\n");
 	}
+	printf("------------------------------------\n");
 }
 
 
@@ -383,15 +575,71 @@ void test_val4(void )
 
 int main(void )
 {
-	unsigned long A[4];
-	test_div4();
+	unsigned long A[4], B[4], C[4];
+	test_mul4();
 	rand4_C(A);
-	test_my_rdtsc(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
 	rand4_C(A);
-	test_my_rdtsc(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
 	rand4_C(A);
-	test_my_rdtsc(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
 	rand4_C(A);
-	test_my_rdtsc(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
+	rand4_C(A);
+	rand4_C(B);
+	rand4_C(C);
+	test_my_rdtsc(A, B, C);
 	return(0);
 }

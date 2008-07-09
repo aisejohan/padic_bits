@@ -32,11 +32,12 @@ older_gcc:
 	cp rdtsc.s.gcc432 rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona div_trivial.c
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona mul_trivial.c
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona div_inline_asm.c
 	cp rshift.s.gcc432 rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o rshift.o div_inline_asm.o main.o
+	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o mul_trivial.o div_trivial.o rshift.o div_inline_asm.o main.o
 
 clean:
 	rm -f tester
