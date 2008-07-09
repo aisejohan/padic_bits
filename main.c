@@ -34,6 +34,14 @@ void print4(unsigned long *a)
 						a[0], a[1], a[2], a[3]);
 }
 
+void set4_C(unsigned long *A, unsigned long *B)
+{
+	A[0] = B[0];
+	A[1] = B[1];
+	A[2] = B[2];
+	A[3] = B[3];
+}
+
 void chop_C(unsigned long *couple, unsigned long a)
 {
 	couple[0] = (a << 32) >> 32;
@@ -106,15 +114,46 @@ void div4_C(unsigned long *A, unsigned int k)
 	A[3] = A[3] >> k;
 }
 
-void set4_C(unsigned long *A, unsigned long *B)
+void rand4_C(unsigned long *A)
 {
-	A[0] = B[0];
-	A[1] = B[1];
-	A[2] = B[2];
-	A[3] = B[3];
+	A[0] = (unsigned long) rand() + ((unsigned long) rand() << 1) + ((unsigned long) rand() << 32) + ((unsigned long) rand() << 33);
+	A[1] = (unsigned long) rand() + ((unsigned long) rand() << 1) + ((unsigned long) rand() << 32) + ((unsigned long) rand() << 33);
+	A[2] = (unsigned long) rand() + ((unsigned long) rand() << 1) + ((unsigned long) rand() << 32) + ((unsigned long) rand() << 33);
+	A[3] = (unsigned long) rand() + ((unsigned long) rand() << 1) + ((unsigned long) rand() << 32) + ((unsigned long) rand() << 33);
 }
 
-#define DIV4(a,b)	div4_inline_asm(a,b)
+void div4_inline_asm_C(unsigned long *A, unsigned int k)
+{
+	__asm__("movq	8(%0), %%rax		\n\t"	\
+		"shrdq	%%cl, %%rax, (%0)	\n\t"	\
+		"movq	16(%0), %%rdx		\n\t"	\
+		"shrdq	%%cl, %%rdx, %%rax	\n\t"	\
+		"movq	%%rax, 8(%0)		\n\t"	\
+		"movq	24(%0), %%rax		\n\t"	\
+		"shrdq	%%cl, %%rax, %%rdx	\n\t"	\
+		"movq	%%rdx, 16(%0)		\n\t"	\
+		"shrq	%%cl, 24(%0)"			\
+		:					\
+		: "r" (A), "c" (k)			\
+		: "rax", "rdx"				\
+	);
+	return;
+}
+
+unsigned long my_rdtsc_inline_asm_C(void )
+{
+	unsigned long uit;
+
+	__asm__ __volatile__ ("rdtsc	\n\t"	\
+		"shl	$32, %%rdx	\n\t"	\
+		"or	%%rdx, %%rax	\n\t"	\
+		: "=a" (uit)			\
+		:				\
+		: "rdx");
+	return(uit);
+}
+
+#define DIV4(a,b)	div4_xmms(a,b)
 
 void test_div4(void )
 {
@@ -142,22 +181,12 @@ void test_div4(void )
 	printf("------------------------------------\n");
 }
 
-void test_my_rdtsc(void )
+void test_my_rdtsc(unsigned long *A)
 {
 	unsigned long before, after;
-	unsigned long A[4];
-	A[0] = 1;
-	A[1] = 2;
-	A[2] = 3;
-	A[3] = 5;
-	DIV4(A, 11);
-	before = my_rdtsc();
-	DIV4(A, 1);
+	before = my_rdtsc_inline_asm_C();
 	DIV4(A, 21);
-	DIV4(A, 31);
-	DIV4(A, 5);
-	DIV4(A, 7);
-	after = my_rdtsc();
+	after = my_rdtsc_inline_asm_C();
 	printf("before = %lu and after = %lu difference = %lu.\n",
 						before, after, after - before);
 }
@@ -354,7 +383,15 @@ void test_val4(void )
 
 int main(void )
 {
+	unsigned long A[4];
 	test_div4();
-	test_my_rdtsc();
+	rand4_C(A);
+	test_my_rdtsc(A);
+	rand4_C(A);
+	test_my_rdtsc(A);
+	rand4_C(A);
+	test_my_rdtsc(A);
+	rand4_C(A);
+	test_my_rdtsc(A);
 	return(0);
 }

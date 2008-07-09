@@ -8,9 +8,10 @@ void div4_inline_asm(unsigned long *A, unsigned int k)
 		"movq	24(%0), %%rax		\n\t"	\
 		"shrdq	%%cl, %%rax, %%rdx	\n\t"	\
 		"movq	%%rdx, 16(%0)		\n\t"	\
-		"shrq	%%cl, 24(%0)		\n\t"	\
+		"shrq	%%cl, 24(%0)"			\
 		:					\
 		: "r" (A), "c" (k)			\
+		: "rax", "rdx"				\
 	);
 	return;
 }
