@@ -114,6 +114,8 @@ void set4_C(unsigned long *A, unsigned long *B)
 	A[3] = B[3];
 }
 
+#define DIV4(a,b)	div4(a,b)
+
 void test_div4(void )
 {
 	int i,j,k;
@@ -121,16 +123,13 @@ void test_div4(void )
 
 	k = 33;
 
-	for(j = 1; j <= 10000; j++) {
+	for(j = 1; j <= 1000000; j++) {
 		for(i = 0; i <= 3; i++) {
 			A[i] = j + i + j*i*j*j;
 		}
 		set4_C(B, A);
-		printf("------------------------------------\n");
-		printf("A = "); print4(A); printf("\n");
-		div4(A, k);
-		printf("A >> %d = ", k); print4(A); printf("\n");
-		div4_C(B, k);
+		div4_C(A, k);
+		DIV4(B, k);
 		neg4(B);
 		add4(C, A, B);
 		if ((C[0] != 0) | (C[1] != 0) | (C[2] != 0) | (C[3] != 0)) {
@@ -139,8 +138,8 @@ void test_div4(void )
 			printf("SUM = "); print4(C); printf("\n");
 			return;
 		}
-		printf("------------------------------------\n");
 	}
+	printf("------------------------------------\n");
 }
 
 void test_my_rdtsc(void )
@@ -151,13 +150,13 @@ void test_my_rdtsc(void )
 	A[1] = 2;
 	A[2] = 3;
 	A[3] = 5;
-	div4_external_C(A, 11);
+	DIV4(A, 11);
 	before = my_rdtsc();
-	div4_external_C(A, 1);
-	div4_external_C(A, 21);
-	div4_external_C(A, 31);
-	div4_external_C(A, 5);
-	div4_external_C(A, 7);
+	DIV4(A, 1);
+	DIV4(A, 21);
+	DIV4(A, 31);
+	DIV4(A, 5);
+	DIV4(A, 7);
 	after = my_rdtsc();
 	printf("before = %lu and after = %lu difference = %lu.\n",
 						before, after, after - before);
@@ -355,6 +354,7 @@ void test_val4(void )
 
 int main(void )
 {
+	test_div4();
 	test_my_rdtsc();
 	return(0);
 }
