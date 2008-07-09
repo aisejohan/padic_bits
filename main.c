@@ -114,7 +114,7 @@ void set4_C(unsigned long *A, unsigned long *B)
 	A[3] = B[3];
 }
 
-#define DIV4(a,b)	div4(a,b)
+#define DIV4(a,b)	div4_inline_asm(a,b)
 
 void test_div4(void )
 {

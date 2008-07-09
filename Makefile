@@ -12,10 +12,11 @@ all:
 	cp rdtsc.s.gcc432 rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native div_trivial.c
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=native div_inline_asm.c
 	cp rshift.s.gcc432 rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o rshift.o main.o
+	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o rshift.o div_inline_asm.o main.o
 
 older_gcc:
 	cp add_trivial.s.gcc432 add.s
@@ -30,9 +31,12 @@ older_gcc:
 	gcc -Wall -pedantic -std=c99 -c -O3 div.s
 	cp rdtsc.s.gcc432 rdtsc.s
 	gcc -Wall -pedantic -std=c99 -c -O3 rdtsc.s
-	gcc -Wall -pedantic -std=c99 -c -O3 div_trivial.c
-	gcc -Wall -pedantic -std=c99 -c -O3 main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o main.o
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona div_trivial.c
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona div_inline_asm.c
+	cp rshift.s.gcc432 rshift.s
+	gcc -Wall -pedantic -std=c99 -c -O3 rshift.s
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=nocona main.c
+	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o div_trivial.o rshift.o div_inline_asm.o main.o
 
 clean:
 	rm -f tester
