@@ -276,12 +276,15 @@ void neg4_C(unsigned long *A)
 {
 	unsigned long B[4], C[4];
 
-	B[0] = -1;
-	B[1] = -1;
-	B[2] = -1;
-	B[3] = -1;
-	mul4_C(C, B, A);
-	set4_C(A, C);
+	C[0] = A[0] ^ ((unsigned long) -1);
+	C[1] = A[1] ^ ((unsigned long) -1);
+	C[2] = A[2] ^ ((unsigned long) -1);
+	C[3] = A[3] ^ ((unsigned long) -1);
+	B[0] = 1;
+	B[1] = 0;
+	B[2] = 0;
+	B[3] = 0;
+	add4_C(A, B, C);
 }
 
 void div4_C(unsigned long *A, unsigned int k)
@@ -335,3 +338,29 @@ void rand4_C(unsigned long *A)
 	A[3] = (unsigned long) rand() + ((unsigned long) rand() << 1) + ((unsigned long) rand() << 32) + ((unsigned long) rand() << 33);
 }
 
+void inv4_C(unsigned long *A)
+{
+	int e;
+	unsigned long B[4], C[4], D[4];
+
+	set4_C(C, A);
+	A[0]--; /* No overflow as A is unit 1+2... */
+	e = val4_C(A); /* C is 1+2^e x */
+	neg4_C(A);
+	A[0]++; /* No overflow as A[0] is even. Now A = 1 - 2^e x */
+	mul4_C(D, C, A);
+	set4_C(C, D);
+	e = 2*e;
+
+	while (e < 256) {
+		set4_C(B, C); /* What is left over */
+		B[0]--;
+		neg4_C(B);
+		B[0]++; /* Now B = 1 - 2^{2e} y */ 
+		mul4_C(D, C, B);
+		set4_C(C, D); /* C is updated. */
+		mul4_C(D, A, B);
+		set4_C(A, D); /* A is updated. */
+		e = 2*e;
+	}
+}
