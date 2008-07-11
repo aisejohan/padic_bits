@@ -70,3 +70,72 @@ unsigned long my_rdtsc_inline_asm_C(void )
 				: "rdx");
 	return(uit);
 }
+
+void neg4_inline_asm_C(unsigned long *A)
+{
+	__asm__("notq	(%0)		\n\t"	\
+		"notq	8(%0)		\n\t"	\
+		"notq	16(%0)		\n\t"	\
+		"notq	24(%0)		\n\t"	\
+		"addq	$1, (%0)	\n\t"	\
+		"adcq	$0, 8(%0)	\n\t"	\
+		"adcq	$0, 16(%0)	\n\t"	\
+		"adcq	$0, 24(%0)"		\
+		:				\
+		: "r" (A)			\
+		: "memory");
+	return;
+}
+
+void mul4_inline_asm_C(unsigned long *S, unsigned long *A, unsigned long *B)
+{
+
+__asm__("movq	(%1), %%rax	\n\t"	\
+	"mulq	(%2)		\n\t"	\
+	"movq	%%rax, (%0)	\n\t"	\
+	"movq	%%rdx, 8(%0)	\n\t"	\
+	"movq	8(%1), %%rax	\n\t"	\
+	"mulq	(%2)		\n\t"	\
+	"movq	%%rax, %%r8	\n\t"	\
+	"movq	%%rdx, %%r9	\n\t"	\
+	"movq	16(%1), %%rax	\n\t"	\
+	"mulq	(%2)		\n\t"	\
+	"movq	%%rax, 16(%0)	\n\t"	\
+	"movq	%%rdx, 24(%0)	\n\t"	\
+	"movq	24(%1), %%rax	\n\t"	\
+	"mulq	(%2)		\n\t"	\
+	"addq	%%r8, 8(%0)	\n\t"	\
+	"adcq	%%r9, 16(%0)	\n\t"	\
+	"adcq	%%rax, 24(%0)	\n\t"	\
+	"movq	(%1), %%rax	\n\t"	\
+	"mulq	8(%2)		\n\t"	\
+	"movq	%%rax, %%r8	\n\t"	\
+	"movq	%%rdx, %%r9	\n\t"	\
+	"movq	8(%1), %%rax	\n\t"	\
+	"mulq	8(%2)		\n\t"	\
+	"movq	%%rax, %%r10	\n\t"	\
+	"addq	%%r8, 8(%0)	\n\t"	\
+	"adcq	%%r9, 16(%0)	\n\t"	\
+	"adcq	%%rdx, 24(%0)	\n\t"	\
+	"movq	16(%1), %%rax	\n\t"	\
+	"mulq	8(%2)		\n\t"	\
+	"addq	%%r10, 16(%0)	\n\t"	\
+	"adcq	%%rax, 24(%0)	\n\t"	\
+	"movq	(%1), %%rax	\n\t"	\
+	"mulq	16(%2)		\n\t"	\
+	"addq	%%rax, 16(%0)	\n\t"	\
+	"adcq	%%rdx, 24(%0)	\n\t"	\
+	"movq	8(%1), %%rax	\n\t"	\
+	"mulq	16(%2)		\n\t"	\
+	"addq	%%rax, 24(%0)	\n\t"	\
+	"movq	(%1), %%rax	\n\t"	\
+	"mulq	24(%2)		\n\t"	\
+	"addq	%%rax, 24(%0)	\n\t"	\
+	:				\
+	: "r" (S), "r" (A), "r" (B)	\
+	: "rax", "rdx", "r8", "r9", "r10", "memory");
+
+return;
+}
+
+

@@ -31,10 +31,10 @@
 
 
 #define NR_TESTS	100
-#define DIV4(a,b)	div4(a,b)
-#define ADD4(a,b,c)	add4(a,b,c)
-#define MUL4(a,b,c)	mul4(a,b,c)
-#define NEG4(a)		neg4(a)
+#define DIV4(a,b)	div4_inline_asm_C(a,b)
+#define ADD4(a,b,c)	add4_inline_asm_C(a,b,c)
+#define MUL4(a,b,c)	mul4_inline_asm_C(a,b,c)
+#define NEG4(a)		neg4_inline_asm_C(a)
 #define VAL4(a)		val4(a)
 
 void test_div4(void )
@@ -312,7 +312,7 @@ void test_inv4(void )
 
 int main(void )
 {
-/*	test_div4();
+	test_div4();
 	printf("DIV4\n");
 	test_time_div4();
 	test_add4();
@@ -326,7 +326,7 @@ int main(void )
 	test_time_mul4();
 	test_val4();
 	printf("VAL4\n");
-	test_time_val4(); */
+	test_time_val4();
 	test_inv4();
 	return(0);
 }
