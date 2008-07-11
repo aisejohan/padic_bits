@@ -21,6 +21,18 @@
  *
  *									*/
 
+#define DIV4(a,b)	div4(a,b)
+#define ADD4(a,b,c)	add4(a,b,c)
+#define MUL4(a,b,c)	mul4(a,b,c)
+#define NEG4(a)		neg4(a)
+#define VAL4(a)		val4(a)
+#define	SET4(a,b)	set4_C(a,b)
+#define	EQUAL4(a,b)	equal4_C(a,b)
+#define ISZERO4(a)	is_zero4_C(a)
+#define INV4(a)		inv4_C(a)
+#define PRINT4(a)	print4_C(a)
+#define	I_TO_4(a,k)	i_to_4_C(a,k)
+
 void print4_C(unsigned long *A)
 {
 	printf("%lu + %lu*2^64 + %lu*2^128 + %lu*2^192",
@@ -31,6 +43,11 @@ int equal4_C(unsigned long *A, unsigned long *B)
 {
 	return ((A[0] == B[0]) && (A[1] == B[1]) && (A[2] == B[2])
 							&& (A[3] == B[3]));
+}
+
+int is_zero4_C(unsigned long *A)
+{
+	return ((A[0] == 0) && (A[1] == 0) && (A[2] == 0) && (A[3] == 0));
 }
 
 void set4_C(unsigned long *A, unsigned long *B)
@@ -287,6 +304,19 @@ void neg4_C(unsigned long *A)
 	add4_C(A, B, C);
 }
 
+void i_to_4_C(unsigned long *A, int k)
+{
+	A[1] = 0;
+	A[2] = 0;
+	A[3] = 0;
+	if (k >= 0) {
+		A[0] = k;
+	} else {
+		A[0] = -k;
+		neg4_C(A);
+	}
+}
+
 void div4_C(unsigned long *A, unsigned int k)
 {
 	if (k == 0) return;
@@ -339,24 +369,24 @@ void inv4_C(unsigned long *A)
 	int e;
 	unsigned long B[4], C[4], D[4];
 
-	set4_C(C, A);
+	SET4(C, A);
 	A[0]--; /* No overflow as A is unit 1+2... */
-	e = val4_C(A); /* C is 1+2^e x */
-	neg4_C(A);
+	e = VAL4(A); /* C is 1+2^e x */
+	NEG4(A);
 	A[0]++; /* No overflow as A[0] is even. Now A = 1 - 2^e x */
-	mul4_C(D, C, A);
-	set4_C(C, D);
+	MUL4(D, C, A);
+	SET4(C, D);
 	e = 2*e;
 
 	while (e < 256) {
-		set4_C(B, C); /* What is left over */
+		SET4(B, C); /* What is left over */
 		B[0]--;
-		neg4_C(B);
+		NEG4(B);
 		B[0]++; /* Now B = 1 - 2^{2e} y */ 
-		mul4_C(D, C, B);
-		set4_C(C, D); /* C is updated. */
-		mul4_C(D, A, B);
-		set4_C(A, D); /* A is updated. */
+		MUL4(D, C, B);
+		SET4(C, D); /* C is updated. */
+		MUL4(D, A, B);
+		SET4(A, D); /* A is updated. */
 		e = 2*e;
 	}
 }

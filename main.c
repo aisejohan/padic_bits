@@ -26,16 +26,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "functions_asm.h"
-#include "functions_C.h"
 #include "functions_inline_asm.h"
+#include "functions_C.h"
 
 
 #define NR_TESTS	100
-#define DIV4(a,b)	div4_inline_asm_C(a,b)
-#define ADD4(a,b,c)	add4_inline_asm_C(a,b,c)
-#define MUL4(a,b,c)	mul4_inline_asm_C(a,b,c)
-#define NEG4(a)		neg4_inline_asm_C(a)
-#define VAL4(a)		val4_C(a)
 
 void test_div4(void )
 {
@@ -309,6 +304,31 @@ void test_inv4(void )
 	printf("------------------------------------\n");
 }
 
+void test_time_inv4(void )
+{
+	int j;
+	unsigned long before, after;
+	unsigned long stats[NR_TESTS];
+	unsigned long total;
+	unsigned long A[4];
+
+	total = 0;
+	j = 0;
+	while (j < NR_TESTS) {
+		rand4_C(A);
+		while (A[0] % 2 == 0) rand4_C(A);
+		before = my_rdtsc_inline_asm_C();
+		INV4(A);
+		after = my_rdtsc_inline_asm_C();
+		stats[j] = after - before;
+		total += stats[j];
+		j++;
+	}
+	printf("[");
+	for (j = 0; j + 1 < NR_TESTS; j++) printf("%lu,", stats[j]);
+	printf("%lu]\n", stats[NR_TESTS - 1]);
+	printf("Average = %lu.\n", total/NR_TESTS);
+}
 
 int main(void )
 {
@@ -328,5 +348,7 @@ int main(void )
 	printf("VAL4\n");
 	test_time_val4();
 	test_inv4();
+	printf("INV4\n");
+	test_time_inv4();
 	return(0);
 }
