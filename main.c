@@ -35,7 +35,7 @@
 #define ADD4(a,b,c)	add4_inline_asm_C(a,b,c)
 #define MUL4(a,b,c)	mul4_inline_asm_C(a,b,c)
 #define NEG4(a)		neg4_inline_asm_C(a)
-#define VAL4(a)		val4(a)
+#define VAL4(a)		val4_C(a)
 
 void test_div4(void )
 {

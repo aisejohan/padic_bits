@@ -299,35 +299,31 @@ void div4_C(unsigned long *A, unsigned int k)
 
 int val4_C(unsigned long *A)
 {
-        register unsigned long count;
-        unsigned long a;
+	unsigned long a, b;
 
-        a = A[0];
-        if (a) {
-                __asm__ ("bsfq %1,%0" : "=r" (count) : "rm" (a));
-                goto UIT;
-        }
-        a = A[1];
-        if (a) {
-                __asm__ ("bsfq %1,%0" : "=r" (count) : "rm" (a));
-                count = count + 64;
-                goto UIT;
-        }
-        a = A[2];
-        if (a) {
-                __asm__ ("bsfq %1,%0" : "=r" (count) : "rm" (a));
-                count = count + 128;
-                goto UIT;
-        }
-        a = A[3];
-        if (a) {
-                __asm__ ("bsfq %1,%0" : "=r" (count) : "rm" (a));
-                count = count + 192;
-                goto UIT;
-        }
-        count = 256;
-UIT:
-        return((int) count);
+        if (A[0] == 0) {
+		if (A[1] == 0) {
+			if (A[2] == 0) {
+				if (A[3] == 0) {
+					return(256);
+				} else {
+					a = 192;
+					b = A[3];
+				}
+			} else {
+				a = 128;
+				b = A[2];
+			}
+		} else {
+			a = 64;
+			b = A[1];
+		}
+	} else {
+		a = 0;
+		b = A[0];
+	}
+        __asm__ ("bsfq %1,%0" : "=r" (b) : "r" (b));
+        return((int) a + b);
 }
 
 void rand4_C(unsigned long *A)
