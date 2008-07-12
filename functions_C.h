@@ -21,11 +21,11 @@
  *
  *									*/
 
-#define DIV4(a,b)	div4(a,b)
-#define ADD4(a,b,c)	add4(a,b,c)
-#define MUL4(a,b,c)	mul4(a,b,c)
-#define NEG4(a)		neg4(a)
-#define VAL4(a)		val4(a)
+#define DIV4(a,b)	div4_inline_asm_C(a,b)
+#define ADD4(a,b,c)	add4_inline_asm_C(a,b,c)
+#define MUL4(a,b,c)	mul4_inline_asm_C(a,b,c)
+#define NEG4(a)		neg4_inline_asm_C(a)
+#define VAL4(a)		val4_C(a)
 #define	SET4(a,b)	set4_C(a,b)
 #define	EQUAL4(a,b)	equal4_C(a,b)
 #define ISZERO4(a)	is_zero4_C(a)
