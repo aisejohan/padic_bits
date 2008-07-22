@@ -1,6 +1,8 @@
 all:
 	cp add_trivial.asm add.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native add.s
+	cp loop_add.asm loop_add.s
+	gcc -Wall -pedantic -std=c99 -c -O3 -march=native loop_add.s
 	cp mul_trivial.asm mul.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native mul.s
 	cp val_trivial.asm val.s
@@ -14,7 +16,7 @@ all:
 	cp rshift.asm rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native rshift.s
 	gcc -Wall -pedantic -std=c99 -c -O3 -march=native main.c
-	gcc -o tester add.o mul.o val.o neg.o div.o rdtsc.o rshift.o main.o
+	gcc -o tester add.o loop_add.o mul.o val.o neg.o div.o rdtsc.o rshift.o main.o
 
 older:
 	cp add_trivial.asm add.s

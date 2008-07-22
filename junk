@@ -1,0 +1,264 @@
+.globl loop_add4
+	.type	loop_add4, @function
+loop_add4:
+# Input 1: rdi <--- S
+# Input 2: rsi <--- A
+# Input 3: rdx <--- B
+# Input 4: rcx <--- k the number of multiples of 4
+        pushq   %rbx
+        pushq   %r12
+        pushq   %r13
+        pushq   %r14
+	xor	%r8, %r8		# Also clears CF
+.LOOP:
+	movq	(%rdx,%r8,8), %rax
+	movq	(%rsi,%r8,8), %rbx
+	adcq	%rax, %rbx
+	movq	%rbx, (%rdi,%r8,8)
+	movq	8(%rdx,%r8,8), %r9
+	movq	8(%rsi,%r8,8), %r10
+	adcq	%r9, %r10
+	movq	%r10, 8(%rdi,%r8,8)
+	movq	16(%rdx,%r8,8), %r11
+	movq	16(%rsi,%r8,8), %r12
+	adcq	%r12, %r11
+	movq	%r11, 16(%rdi,%r8,8)
+	movq	24(%rdx,%r8,8), %r13
+	movq	24(%rsi,%r8,8), %r14
+	adcq	%r14, %r13
+	movq	%r13, 24(%rdi,%r8,8)
+	inc	%r8
+	dec	%rcx
+	jnz	.LOOP
+        popq   %r14
+        popq   %r13
+        popq   %r12
+        popq   %rbx
+	ret
+
+.globl loop_add4
+	.type	loop_add4, @function
+loop_add4:
+# Input 1: rdi <--- S
+# Input 2: rsi <--- A
+# Input 3: rdx <--- B
+# Input 4: rcx <--- k the number of multiples of 4
+        pushq   %rbx
+        pushq   %r12
+        pushq   %r13
+        pushq   %r14
+	xor	%r8, %r8		# Also clears CF
+LOOP:
+	movq	(%rdx,%r8,8), %rax
+	movq	(%rsi,%r8,8), %rbx
+	adcq	%rax, %rbx
+	movq	%rbx, (%rdi,%r8,8)
+	movq	8(%rdx,%r8,8), %r9
+	movq	8(%rsi,%r8,8), %r10
+	adcq	%r9, %r10
+	movq	%r10, 8(%rdi,%r8,8)
+	movq	16(%rdx,%r8,8), %r11
+	movq	16(%rsi,%r8,8), %r12
+	adcq	%r11, %r12
+	movq	%r12, 16(%rdi,%r8,8)
+	movq	24(%rdx,%r8,8), %r13
+	movq	24(%rsi,%r8,8), %r14
+	adcq	%r13, %r14
+	movq	%r14, 24(%rdi,%r8,8)
+	inc	%r8
+	dec	%rcx
+	jnz	LOOP
+        popq   %r14
+        popq   %r13
+        popq   %r12
+        popq   %rbx
+	ret
+
+.globl loop_add4
+	.type	loop_add4, @function
+loop_add4:
+# Input 1: rdi <--- S
+# Input 2: rsi <--- A
+# Input 3: rdx <--- B
+# Input 4: rcx <--- k the number of multiples of 4
+	xor	%r8, %r8		# Also clears CF
+.LOOP:
+	movq	(%rdx,%r8,8), %rax
+	adcq	(%rsi,%r8,8), %rax
+	movq	%rax, (%rdi,%r8,8)
+	movq	8(%rdx,%r8,8), %rax
+	adcq	8(%rsi,%r8,8), %rax
+	movq	%rax, 8(%rdi,%r8,8)
+	movq	16(%rdx,%r8,8), %rax
+	adcq	16(%rsi,%r8,8), %rax
+	movq	%rax, 16(%rdi,%r8,8)
+	movq	24(%rdx,%r8,8), %rax
+	adcq	24(%rsi,%r8,8), %rax
+	movq	%rax, 24(%rdi,%r8,8)
+	inc	%r8
+	dec	%rcx
+	jnz	.LOOP
+	ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	.globl	jwm_mpn_add_n
+jwm_mpn_add_n:
+
+	pushq	%rbp		
+	pushq	%rbx
+	pushq	%r12
+	pushq	%r13
+	pushq	%r14
+	pushq	%r15
+
+	xor	%r15,%r15		
+					
+	.byte	0x9f		
+
+	mov	%rcx,%r9
+	sub	$4,%r9			
+
+	.align	2, 0x90			
+L_mpn_add_n_main_loop:
+	
+	jle	L_mpn_add_n_loop_done
+
+	.byte	0x9e		
+	
+	
+	movq	(%rsi,%r15,8),%rbx
+	movq	(%rdx,%r15,8),%r8
+	adc	%rbx,%r8
+	movq	%r8,(%rdi,%r15,8)
+	
+	
+	
+	movq	8(%rsi,%r15,8),%r9
+	movq	8(%rdx,%r15,8),%r10
+	adc	%r9,%r10
+	movq	%r10,8(%rdi,%r15,8)
+	
+	
+	
+	movq	16(%rsi,%r15,8),%r11
+	movq	16(%rdx,%r15,8),%r12
+	adc	%r11,%r12
+	movq	%r12,16(%rdi,%r15,8)
+
+	
+	
+	movq	24(%rsi,%r15,8),%r13
+	movq	24(%rdx,%r15,8),%r14
+	adc	%r13,%r14
+	movq	%r14,24(%rdi,%r15,8)
+
+	.byte	0x9f		
+
+	mov	%r15,%r10
+	add	$8,%r10
+	add	$4,%r15		
+	
+	mov	%rcx,%r9
+	sub	%r10,%r9	
+	jmp	L_mpn_add_n_main_loop
+
+L_mpn_add_n_loop_done:
+	mov	%rcx,%r15	
+	sub	%r9,%r15	
+	sub	$4,%r15		
+	cmp	%rcx,%r15
+L_mpn_add_n_post_loop:
+	je	L_mpn_add_n_exit
+	.byte	0x9e		
+	
+	
+	movq	(%rsi,%r15,8),%rbx
+	movq	(%rdx,%r15,8),%r8
+	adc	%rbx,%r8
+	movq	%r8,(%rdi,%r15,8)
+	.byte	0x9f		
+	add	$1,%r15
+	cmp	%rcx,%r15
+	jmp	L_mpn_add_n_post_loop
+	
+	
+L_mpn_add_n_exit:
+	xor	%rcx,%rcx
+	.byte	0x9e	
+	mov	%rcx,%rax	
+	adc	%rax,%rax	
+	
+	popq	%r15		
+	popq	%r14
+	popq	%r13
+	popq	%r12
+	popq	%rbx
+	popq	%rbp
+	ret
+
+	

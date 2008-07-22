@@ -132,6 +132,88 @@ void test_time_add4(void )
 	printf("Average = %lu.\n", total/NR_TESTS);
 }
 
+void test_loop_add4(void )
+{
+	int i,j;
+	unsigned long A[32], B[32], C[32];
+
+	for(j = 1; j <= 2; j++) {
+		rand4_C(A);
+		rand4_C(B);
+		rand4_C(&(A[4]));
+		rand4_C(&(B[4]));
+		rand4_C(&(A[8]));
+		rand4_C(&(B[8]));
+		rand4_C(&(A[12]));
+		rand4_C(&(B[12]));
+		rand4_C(&(A[16]));
+		rand4_C(&(B[16]));
+		rand4_C(&(A[20]));
+		rand4_C(&(B[20]));
+		rand4_C(&(A[24]));
+		rand4_C(&(B[24]));
+		rand4_C(&(A[28]));
+		rand4_C(&(B[28]));
+		loop_add4(C, A, B, 32);
+		printf("A = [");
+		for (i = 0; i<= 30; i++) {
+			printf("%lu, ", A[i]);
+		}
+		printf("%lu];\n", A[31]);
+		printf("B = [");
+		for (i = 0; i<= 30; i++) {
+			printf("%lu, ", B[i]);
+		}
+		printf("%lu];\n", B[31]);
+		printf("C = [");
+		for (i = 0; i<= 30; i++) {
+			printf("%lu, ", C[i]);
+		}
+		printf("%lu];\n", C[31]);
+	}
+	printf("------------------------------------\n");
+}
+
+void test_time_loop_add4(void )
+{
+	int j;
+	unsigned long before, after;
+	unsigned long stats[NR_TESTS];
+	unsigned long total;
+	unsigned long A[64], B[64], C[64];
+
+	total = 0;
+	j = 0;
+	while (j < NR_TESTS) {
+		rand4_C(A);
+		rand4_C(B);
+		rand4_C(&(A[4]));
+		rand4_C(&(B[4]));
+		rand4_C(&(A[8]));
+		rand4_C(&(B[8]));
+		rand4_C(&(A[12]));
+		rand4_C(&(B[12]));
+		rand4_C(&(A[16]));
+		rand4_C(&(B[16]));
+		rand4_C(&(A[20]));
+		rand4_C(&(B[20]));
+		rand4_C(&(A[24]));
+		rand4_C(&(B[24]));
+		rand4_C(&(A[28]));
+		rand4_C(&(B[28]));
+		before = my_rdtsc_inline_asm_C();
+		loop_add4(C, A, B, 64);
+		after = my_rdtsc_inline_asm_C();
+		stats[j] = after - before;
+		total += stats[j];
+		j++;
+	}
+	printf("[");
+	for (j = 0; j + 1 < NR_TESTS; j++) printf("%lu,", stats[j]);
+	printf("%lu]\n", stats[NR_TESTS - 1]);
+	printf("Average = %lu.\n", total/NR_TESTS);
+}
+
 void test_neg4(void )
 {
 	int j;
@@ -332,6 +414,9 @@ void test_time_inv4(void )
 
 int main(void )
 {
+	test_loop_add4();
+	printf("LOOP_ADD4\n");
+	test_time_loop_add4();
 	test_div4();
 	printf("DIV4\n");
 	test_time_div4();
