@@ -28,6 +28,7 @@
 #include "functions_asm.h"
 #include "functions_inline_asm.h"
 #include "functions_C.h"
+#include <gmp.h>
 
 
 #define NR_TESTS	100
@@ -46,9 +47,9 @@ void test_div4(void )
 		div4_C(B, k);
 		DIV4(C, k);
 		if (!equal4_C(C, B)) {
-			printf("A = "); print4_C(A); printf("\n");
-			printf("B = "); print4_C(B); printf("\n");
-			printf("C = "); print4_C(C); printf("\n");
+			printf("A = "); print4_C(A); printf(";\n");
+			printf("B = "); print4_C(B); printf(";\n");
+			printf("C = "); print4_C(C); printf(";\n");
 			printf("and k = %u.\n", k);
 			return;
 		}
@@ -94,10 +95,10 @@ void test_add4(void )
 		add4_C(C, A, B);
 		ADD4(D, A, B);
 		if (!equal4_C(C, D)) {
-			printf("A = "); print4_C(A); printf("\n");
-			printf("B = "); print4_C(B); printf("\n");
-			printf("C = "); print4_C(C); printf("\n");
-			printf("D = "); print4_C(D); printf("\n");
+			printf("A = "); print4_C(A); printf(";\n");
+			printf("B = "); print4_C(B); printf(";\n");
+			printf("C = "); print4_C(C); printf(";\n");
+			printf("D = "); print4_C(D); printf(";\n");
 			return;
 		}
 
@@ -134,10 +135,10 @@ void test_time_add4(void )
 
 void test_loop_add4(void )
 {
-	int i,j;
-	unsigned long A[32], B[32], C[32];
+	int j;
+	unsigned long A[16], B[16], C[16];
 
-	for(j = 1; j <= 2; j++) {
+	for(j = 1; j <= 2000; j++) {
 		rand4_C(A);
 		rand4_C(B);
 		rand4_C(&(A[4]));
@@ -146,32 +147,12 @@ void test_loop_add4(void )
 		rand4_C(&(B[8]));
 		rand4_C(&(A[12]));
 		rand4_C(&(B[12]));
-		rand4_C(&(A[16]));
-		rand4_C(&(B[16]));
-		rand4_C(&(A[20]));
-		rand4_C(&(B[20]));
-		rand4_C(&(A[24]));
-		rand4_C(&(B[24]));
-		rand4_C(&(A[28]));
-		rand4_C(&(B[28]));
-		loop_add4(C, A, B, 32);
-		printf("A = [");
-		for (i = 0; i<= 30; i++) {
-			printf("%lu, ", A[i]);
-		}
-		printf("%lu];\n", A[31]);
-		printf("B = [");
-		for (i = 0; i<= 30; i++) {
-			printf("%lu, ", B[i]);
-		}
-		printf("%lu];\n", B[31]);
-		printf("C = [");
-		for (i = 0; i<= 30; i++) {
-			printf("%lu, ", C[i]);
-		}
-		printf("%lu];\n", C[31]);
+		loop_add4(C, A, B);
+		printf("A = "); print16_C(A); printf(";\n");
+		printf("B = "); print16_C(B); printf(";\n");
+		printf("C = "); print16_C(C); printf(";\n");
+		printf("if(valuation(t_add(A,B,C),2) < 1024, error());\n");
 	}
-	printf("------------------------------------\n");
 }
 
 void test_time_loop_add4(void )
@@ -180,7 +161,7 @@ void test_time_loop_add4(void )
 	unsigned long before, after;
 	unsigned long stats[NR_TESTS];
 	unsigned long total;
-	unsigned long A[64], B[64], C[64];
+	unsigned long A[16], B[16], C[16];
 
 	total = 0;
 	j = 0;
@@ -193,16 +174,8 @@ void test_time_loop_add4(void )
 		rand4_C(&(B[8]));
 		rand4_C(&(A[12]));
 		rand4_C(&(B[12]));
-		rand4_C(&(A[16]));
-		rand4_C(&(B[16]));
-		rand4_C(&(A[20]));
-		rand4_C(&(B[20]));
-		rand4_C(&(A[24]));
-		rand4_C(&(B[24]));
-		rand4_C(&(A[28]));
-		rand4_C(&(B[28]));
 		before = my_rdtsc_inline_asm_C();
-		loop_add4(C, A, B, 64);
+		loop_add4(C, A, B);
 		after = my_rdtsc_inline_asm_C();
 		stats[j] = after - before;
 		total += stats[j];
@@ -213,6 +186,122 @@ void test_time_loop_add4(void )
 	printf("%lu]\n", stats[NR_TESTS - 1]);
 	printf("Average = %lu.\n", total/NR_TESTS);
 }
+
+void test_loop_mul4(void )
+{
+	int j;
+	unsigned long A[16], B[16], C[16];
+
+	for(j = 1; j <= 2000; j++) {
+		rand4_C(A);
+		rand4_C(B);
+		rand4_C(&(A[4]));
+		rand4_C(&(B[4]));
+		rand4_C(&(A[8]));
+		rand4_C(&(B[8]));
+		rand4_C(&(A[12]));
+		rand4_C(&(B[12]));
+		loop_mul4(C, A, B);
+		printf("A = "); print16_C(A); printf(";\n");
+		printf("B = "); print16_C(B); printf(";\n");
+		printf("C = "); print16_C(C); printf(";\n");
+		printf("if(valuation(t_mul(A,B,C),2) < 1024, error());\n");
+	}
+}
+
+void test_time_loop_mul4(void )
+{
+	int j;
+	unsigned long before, after;
+	unsigned long stats[NR_TESTS];
+	unsigned long total;
+	unsigned long A[16], B[16], C[18];
+
+	total = 0;
+	j = 0;
+	while (j < NR_TESTS) {
+		rand4_C(A);
+		rand4_C(B);
+		rand4_C(&(A[4]));
+		rand4_C(&(B[4]));
+		rand4_C(&(A[8]));
+		rand4_C(&(B[8]));
+		rand4_C(&(A[12]));
+		rand4_C(&(B[12]));
+		before = my_rdtsc_inline_asm_C();
+		mul16_C(C, A, B);
+		after = my_rdtsc_inline_asm_C();
+		stats[j] = after - before;
+		total += stats[j];
+		j++;
+	}
+	printf("[");
+	for (j = 0; j + 1 < NR_TESTS; j++) printf("%lu,", stats[j]);
+	printf("%lu]\n", stats[NR_TESTS - 1]);
+	printf("Average = %lu.\n", total/NR_TESTS);
+}
+
+void set_gmp(mpz_t a, unsigned long *A)
+{
+	int i;
+	mpz_t c;
+
+	mpz_init(c);
+	mpz_set_ui(a, 0);
+	for (i = 0; i <= 15; i++) {
+		mpz_set_ui(c, A[i]);
+		mpz_mul_2exp(c, c, i*64);
+		mpz_add(a, a, c);
+	}
+	mpz_clear(c);
+}
+
+
+void test_time_gmp_mul4(void )
+{
+	int j;
+	unsigned long before, after;
+	unsigned long stats[NR_TESTS];
+	unsigned long total;
+	unsigned long A[16], B[16];
+	mpz_t a, b, c;
+
+	mpz_init(a);
+	mpz_init(b);
+	mpz_init(c);
+
+	total = 0;
+	j = 0;
+	while (j < NR_TESTS) {
+		rand4_C(A);
+		rand4_C(B);
+		rand4_C(&(A[4]));
+		rand4_C(&(B[4]));
+		rand4_C(&(A[8]));
+		rand4_C(&(B[8]));
+		rand4_C(&(A[12]));
+		rand4_C(&(B[12]));
+		set_gmp(a, A);
+		set_gmp(b, B);
+		before = my_rdtsc_inline_asm_C();
+		mpz_mul(c, a, b);
+		after = my_rdtsc_inline_asm_C();
+		stats[j] = after - before;
+		total += stats[j];
+		j++;
+	}
+	printf("[");
+	for (j = 0; j + 1 < NR_TESTS; j++) printf("%lu,", stats[j]);
+	printf("%lu]\n", stats[NR_TESTS - 1]);
+	printf("Average = %lu.\n", total/NR_TESTS);
+
+	mpz_clear(a);
+	mpz_clear(b);
+	mpz_clear(c);
+}
+
+
+
 
 void test_neg4(void )
 {
@@ -226,9 +315,9 @@ void test_neg4(void )
 		neg4_C(B);
 		NEG4(C);
 		if (!equal4_C(B, C)) {
-			printf("A = "); print4_C(A); printf("\n");
-			printf("B = "); print4_C(B); printf("\n");
-			printf("C = "); print4_C(C); printf("\n");
+			printf("A = "); print4_C(A); printf(";\n");
+			printf("B = "); print4_C(B); printf(";\n");
+			printf("C = "); print4_C(C); printf(";\n");
 			return;
 		}
 	}
@@ -414,9 +503,12 @@ void test_time_inv4(void )
 
 int main(void )
 {
-	test_loop_add4();
+/*	test_loop_mul4();		*/
+test_time_gmp_mul4();
 	printf("LOOP_ADD4\n");
 	test_time_loop_add4();
+	printf("LOOP_MUL4\n");
+	test_time_loop_mul4();
 	test_div4();
 	printf("DIV4\n");
 	test_time_div4();

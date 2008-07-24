@@ -35,7 +35,7 @@ loop_add4:
 
 	movq	56(%rdx),%r11
 	adcq	56(%rsi),%r11
-	movq	%r11,256(%rdi)
+	movq	%r11,56(%rdi)
 
 	movq	64(%rdx),%r8
 	adcq	64(%rsi),%r8

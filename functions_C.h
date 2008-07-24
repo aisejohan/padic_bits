@@ -39,6 +39,71 @@ void print4_C(unsigned long *A)
 						A[0], A[1], A[2], A[3]);
 }
 
+void print16_C(unsigned long *A)
+{
+	int i;
+	printf("[");
+	for (i = 0; i < 15; i++) printf("%lu, ", A[i]);
+	printf("%lu]", A[15]);
+}
+
+/* 
+ * (0,0) -> (0,1) -> (1,0) -> (0,2) -> (1,1) -> (2,0) -> (0,3)
+ */
+#define	next(i,j)	\
+	do {					\
+		if (j > 0) {			\
+			i++;			\
+			j--;			\
+		} else {			\
+			j = i + 1;		\
+			i = 0;			\
+		}				\
+	} while (0)
+
+void mul16_C(unsigned long *S, unsigned long *A, unsigned long *B)
+{
+	int i, j;
+
+	for (i = 0; i < 16; i++) {
+		S[i] = 0;
+	}
+	i = 0;
+	j = 0;
+	while (j < 16) {
+		__asm__("movq	%1, %%rax		\n\t"	\
+			"mulq	%2			\n\t"	\
+			"addq	%%rax, (%0)		\n\t"	\
+			"adcq	%%rdx, 8(%0)		\n\t"	\
+			"adcq	$0, 16(%0)		\n\t"	\
+			:					\
+			: "r" (&S[i+j]), "r" (A[i]), "r" (B[j])	\
+			: "%rax", "%rdx", "memory");
+		next(i,j);
+	}
+/*
+	while (j < 15) {
+		__asm__("movq	%1, %%rax		\n\t"	\
+			"mulq	%2			\n\t"	\
+			"addq	%%rax, (%0)		\n\t"	\
+			"adcq	%%rdx, 8(%0)		\n\t"	\
+			:					\
+			: "r" (&S[i+j]), "r" (A[i]), "r" (B[j])	\
+			: "%rax", "%rdx", "memory");
+		next(i,j);
+	}
+	while (j < 16) {
+		__asm__("movq	%1, %%rax		\n\t"	\
+			"mulq	%2			\n\t"	\
+			"addq	%%rax, (%0)		\n\t"	\
+			:					\
+			: "r" (&S[i+j]), "r" (A[i]), "r" (B[j])	\
+			: "%rax", "%rdx", "memory");
+		next(i,j);
+	}
+*/
+}
+
 int equal4_C(unsigned long *A, unsigned long *B)
 {
 	return ((A[0] == B[0]) && (A[1] == B[1]) && (A[2] == B[2])
